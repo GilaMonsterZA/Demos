@@ -1,0 +1,2 @@
+DROP TABLE dbo.TempShipments;
+ALTER DATABASE InterStellarTransport SET AUTO_CREATE_STATISTICS ON;

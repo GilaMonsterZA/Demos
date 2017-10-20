@@ -8,5 +8,3 @@ SELECT s.ClientID, SUM(sd.Mass) FROM dbo.TempShipments s INNER JOIN dbo.Shipment
 	WHERE s.Priority = 1
 	GROUP BY s.ClientID;
 
-DROP TABLE dbo.TempShipments;
-ALTER DATABASE InterStellarTransport SET AUTO_CREATE_STATISTICS ON;
