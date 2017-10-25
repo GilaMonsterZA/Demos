@@ -17,21 +17,31 @@ SELECT s.ClientID, SUM(sd.Mass) FROM dbo.TempShipments s INNER JOIN dbo.Shipment
 
 GO
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
 
 
 (5000 rows affected)
-Table 'Worktable'. Scan count 0, logical reads 0, physical reads 0, read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob read-ahead reads 0.
+Table 'Shipments'. Scan count 9, logical reads 1129, physical reads 0, read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob read-ahead reads 0.
+Table 'ShipmentDetails'. Scan count 9, logical reads 35273, physical reads 0, read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob read-ahead reads 0.
 Table 'Workfile'. Scan count 0, logical reads 0, physical reads 0, read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob read-ahead reads 0.
-Table 'ShipmentDetails'. Scan count 1, logical reads 34763, physical reads 0, read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob read-ahead reads 0.
-Table 'Shipments'. Scan count 1, logical reads 378, physical reads 0, read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob read-ahead reads 0.
-
-(1 row affected)
+Table 'Worktable'. Scan count 0, logical reads 0, physical reads 0, read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob read-ahead reads 0.
 
  SQL Server Execution Times:
-   CPU time = 3360 ms,  elapsed time = 3475 ms.
-SQL Server parse and compile time: 
-   CPU time = 0 ms, elapsed time = 3 ms.
+   CPU time = 6641 ms,  elapsed time = 944 ms.
+
 
 (5000 rows affected)
 Table 'ShipmentDetails'. Scan count 125380, logical reads 15767782, physical reads 0, read-ahead reads 15, lob logical reads 0, lob physical reads 0, lob read-ahead reads 0.
