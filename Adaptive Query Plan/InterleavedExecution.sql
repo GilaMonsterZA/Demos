@@ -1,5 +1,6 @@
-ALTER FUNCTION ShipmentTotal (@MinimumContainers INT)
-RETURNS @ShipmentTotals TABLE (ClientID INT, ShipmentID int, Priority TINYINT, ReferenceNumber CHAR(25), TotalMass numeric(8,2), TotalVolume numeric(8,2), TotalContainers int)
+CREATE OR ALTER FUNCTION ShipmentTotal (@MinimumContainers INT)
+RETURNS @ShipmentTotals 
+			TABLE (ClientID INT, ShipmentID int, Priority TINYINT, ReferenceNumber CHAR(25), TotalMass numeric(8,2), TotalVolume numeric(8,2), TotalContainers int)
 AS
 BEGIN
 
@@ -17,7 +18,6 @@ END
 GO
 
 SELECT c.LegalName,
-       ss.OfficialName,
        st.Priority,
 	   st.ReferenceNumber,
        SUM(t.Amount) AS ShipmentTotal,
@@ -27,10 +27,8 @@ SELECT c.LegalName,
 	FROM dbo.Clients c 
 		INNER JOIN dbo.ShipmentTotal(1) st ON st.ClientID = c.ClientID 
 		INNER JOIN dbo.Transactions t ON t.ReferenceShipmentID = st.ShipmentID
-		INNER JOIN dbo.StarSystems ss ON ss.StarSystemID = c.HeadquarterSystemID
 	WHERE st.Priority = 2 AND c.ClientID = 42
 	GROUP BY c.LegalName,
-             ss.OfficialName,
              st.Priority,
              st.ReferenceNumber,
              st.TotalMass,

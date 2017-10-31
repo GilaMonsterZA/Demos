@@ -6,7 +6,7 @@ BEGIN TRANSACTION
 
 	SELECT @MaxRow = MAX(SomeColumn) FROM dbo.TestingInserts AS ti
 
-	WAITFOR DELAY '00:05:00'
+	WAITFOR DELAY '00:00:30'
 
 	INSERT INTO dbo.TestingInserts (SomeColumn, SomeOtherColumn)
 	SELECT @MaxRow + 1, 'Insert from Window 2'
