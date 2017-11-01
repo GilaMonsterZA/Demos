@@ -1,4 +1,4 @@
-CREATE PROCEDURE SearchShipments 
+CREATE OR ALTER PROCEDURE SearchShipments 
 	@ClientID INT = NULL, 
 	@OriginStationID INT = NULL,
 	@DestinationStationID INT = NULL 
@@ -22,6 +22,7 @@ WHERE
 	(s.OriginStationID = @OriginStationID OR @OriginStationID IS NULL)
 	AND
 	(s.DestinationStationID = @DestinationStationID OR @DestinationStationID IS NULL)
+	option (recompile)
 GO
 
 EXEC dbo.SearchShipments @ClientID = 42
@@ -29,3 +30,5 @@ EXEC dbo.SearchShipments @ClientID = 42
 GO
 
 EXEC dbo.SearchShipments @OriginStationID = 1
+
+

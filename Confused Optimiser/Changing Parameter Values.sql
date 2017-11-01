@@ -1,4 +1,4 @@
-CREATE PROCEDURE SearchShipmentsRange 
+CREATE OR ALTER PROCEDURE SearchShipmentsRange 
 	@MinMass NUMERIC(6,2) = NULL,
 	@MaxMass NUMERIC(6,2) = NULL,
 	@MinVolume NUMERIC(6,2) = NULL,
@@ -25,8 +25,14 @@ IF (@MinContainers IS NULL)
 IF (@MaxContainers IS NULL)
 	SET @MaxContainers = 32766;
 
-SELECT * 
+SELECT s.ReferenceNumber, sd.Mass, sd.Volume, sd.NumberOfContainers
 	FROM dbo.Shipments s INNER JOIN dbo.ShipmentDetails sd ON sd.ShipmentID = s.ShipmentID
 	WHERE sd.Mass BETWEEN @MinMass AND @MaxMass
 		AND sd.Volume BETWEEN @MinVolume AND @MaxVolume
 		AND sd.NumberOfContainers BETWEEN @MinContainers AND @MaxContainers;
+
+GO
+
+EXEC SearchShipmentsRange @MinContainers = 1, @MaxContainers = 10
+
+
