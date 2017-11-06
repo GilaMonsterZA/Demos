@@ -11,5 +11,5 @@ GO
 -- ANSI_NULLS: True, ANSI_PADDING: True, ANSI_WARNINGS: True, ARITHABORT: True, CONCAT_NULL_YIELDS_NULL: True, NUMERIC_ROUNDABORT: False, QUOTED_IDENTIFIER: True
 
 
-EXEC dbo.GetClientTransactions @Priority = NULL,  @ClientID = 42;
+EXEC dbo.GetClientTransactions @Priority = NULL,  @ClientID = 56;
 
