@@ -1,12 +1,11 @@
-CREATE TABLE Sectors (
-	SectorID INT IDENTITY PRIMARY KEY,
-	SectorName CHAR(4) NOT NULL,
-	Quadrant CHAR(1) NOT NULL
-);
+CREATE DATABASE InterstellarTransport
+GO
+
+USE InterStellarTransport
+GO
 
 CREATE TABLE StarSystems (
 	StarSystemID INT IDENTITY PRIMARY KEY,
-	SectorID INT FOREIGN KEY REFERENCES dbo.Sectors (SectorID) NOT NULL,
 	OfficialName VARCHAR(50) NOT NULL,
 	CommonName VARCHAR(50),
 	GalacticLatitude NUMERIC(5,2) NOT NULL,
@@ -75,7 +74,7 @@ CREATE TABLE Ships (
 CREATE TABLE Clients (
 	ClientID INT IDENTITY PRIMARY KEY,
 	LegalName VARCHAR(100) NOT NULL,
-	HeadquarterSystemID INT NOT NULL FOREIGN KEY REFERENCES dbo.StarSystem (StarSystemID),
+	HeadquarterSystemID INT NOT NULL FOREIGN KEY REFERENCES dbo.StarSystems (StarSystemID),
 	HypernetAddress CHAR(25) NOT NULL,
 );
 
@@ -83,13 +82,14 @@ CREATE TABLE Shipments (
 	ShipmentID INT IDENTITY PRIMARY KEY,
 	ClientID INT NOT NULL FOREIGN KEY REFERENCES dbo.Clients (ClientID),
 	ReferenceNumber CHAR(25) NOT NULL UNIQUE,
-	Priority TINYINT NOT NULL,
+	Priority TINYINT NOT NULL CHECK (Priority IN (1,2,3)),
 	OriginStationID INT NOT NULL FOREIGN KEY REFERENCES dbo.Stations (StationID),
 	DestinationStationID INT NOT NULL FOREIGN KEY REFERENCES dbo.Stations (StationID),
 	HasTemperatureControlled BIT NOT NULL DEFAULT 0,
 	HasHazardous BIT NOT NULL DEFAULT 0,
-	HasLivestock BIT NOT NULL DEFAULT 0
-	-- needs a date column
+	HasLivestock BIT NOT NULL DEFAULT 0,
+	CreationDate DATE DEFAULT (DATEADD(YEAR, 400, GETDATE())),
+	DispatchDate DATE DEFAULT (DATEADD(YEAR, 400, GETDATE()))
 );
 
 CREATE TABLE ShipmentDetails (
@@ -107,6 +107,7 @@ CREATE TABLE ShipmentDetails (
 CREATE TABLE Transactions (
 	TransactionID INT IDENTITY PRIMARY KEY,
 	ReferenceShipmentID INT NOT NULL FOREIGN KEY REFERENCES dbo.Shipments (ShipmentID),
+	ClientID INT NOT NULL FOREIGN KEY REFERENCES Clients (ClientID), 
 	TransactionDate DATETIME NOT NULL DEFAULT (DATEADD(YEAR, 400, GETDATE())),
 	TransactionType CHAR(1) NOT NULL,
 	Amount NUMERIC(8,2) NOT NULL,
