@@ -1,4 +1,7 @@
 -- correct stations and run again
+
+SELECT * FROM dbo.Stations
+
 INSERT INTO dbo.Routes
 (
     RouteName,
@@ -7,7 +10,7 @@ INSERT INTO dbo.Routes
     RouteLength
 )
 VALUES
-	('Pollux -> Raselhague', 29, 33, 0),
+	('Pollux -> Raselhague', 43, 49, 0),
 	('82 Eridant -> Vega', 25, 27, 0),
 	('Delta Pavonis -> Rana', 26, 28, 0),
 	('82 Eridani -> Deneb Algedi', 25, 31, 0),
