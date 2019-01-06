@@ -38,6 +38,7 @@ CREATE TABLE RouteStations (
 	RouteID INT NOT NULL FOREIGN KEY REFERENCES dbo.Routes (RouteID),
 	StationID INT NOT NULL FOREIGN KEY REFERENCES dbo.Stations (StationID),
 	PositionInRoute TINYINT NOT NULL,
+	DistanceToNextStation NUMERIC(7,2) NOT NULL,
 	UNIQUE (RouteID, StationID),
 	UNIQUE (RouteID, PositionInRoute)
 );
