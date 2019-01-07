@@ -1,21 +1,39 @@
-CREATE FUNCTION CalculateRoutes (@StartStationID INT, @EndStationID INT) 
-RETURNS  @RouteList TABLE (RouteID INT, RouteSequence SmallINT) 
-AS
-BEGIN
-	DECLARE @Done BIT = 0;
+DECLARE @Origin INT = 46,
+	@Destination INT = 1;
 
-	-- If the start and end stations are on a single route
-	IF EXISTS (SELECT RouteID FROM dbo.RouteStations WHERE StationID = @StartStationID OR StationID = @EndStationID GROUP BY RouteID HAVING COUNT(*) = 1)
- 
+WITH RouteSegments AS (
+	SELECT  starting.RouteID,
+			starting.StationID AS StartingStation,
+			ending.StationID AS EndingStation,
+			starting.DistanceToNextStation
+		FROM dbo.RouteStations starting INNER JOIN dbo.RouteStations ending ON ending.RouteID = starting.RouteID AND ending.PositionInRoute = starting.PositionInRoute + 1
+	UNION 
+	SELECT  starting.RouteID,
+			starting.StationID AS StartingStation,
+			ending.StationID AS EndingStation,
+			ending.DistanceToNextStation
+		FROM dbo.RouteStations starting INNER JOIN dbo.RouteStations ending ON ending.RouteID = starting.RouteID AND ending.PositionInRoute = starting.PositionInRoute - 1
+)
+SELECT * FROM RouteSegments WHERE StartingStation = @Origin
 
-	-- If the start and end stations are on different routes that have a station in common
+GO
+--CREATE OR ALTER FUNCTION CalculateRoutes (@StartStationID INT, @EndStationID INT) 
+--RETURNS  @RouteList TABLE (RouteID INT, RouteSequence SmallINT) 
+--AS
+--BEGIN
+--	DECLARE @Done BIT = 0;
+
+--	-- If the start and end stations are on a single route
+
+--	-- If the start and end stations are on different routes that have a station in common
 
 
-	-- If the routes do not overlap, however there is one other route that intersects both
+--	-- If the routes do not overlap, however there is one other route that intersects both
 
 
-	-- Otherwise insert a -1 and let the user fix by hand
+--	-- Otherwise insert a -1 and let the user fix by hand
 
 
-	RETURN
-END
+
+--	RETURN 
+--END
