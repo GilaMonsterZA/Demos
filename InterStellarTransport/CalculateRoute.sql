@@ -13,8 +13,16 @@ WITH RouteSegments AS (
 			ending.StationID AS EndingStation,
 			ending.DistanceToNextStation
 		FROM dbo.RouteStations starting INNER JOIN dbo.RouteStations ending ON ending.RouteID = starting.RouteID AND ending.PositionInRoute = starting.PositionInRoute - 1
+),
+Routing AS (
+	SELECT RouteSegments.* FROM RouteSegments WHERE StartingStation = @Origin
+	UNION ALL
+    SELECT RouteSegments.* FROM RouteSegments INNER JOIN Routing ON Routing.EndingStation = RouteSegments.StartingStation
+		WHERE Routing.StartingStation != RouteSegments.EndingStation
 )
-SELECT * FROM RouteSegments WHERE StartingStation = @Origin
+SELECT * FROM Routing
+OPTION (MAXRECURSION 200)
+	
 
 GO
 --CREATE OR ALTER FUNCTION CalculateRoutes (@StartStationID INT, @EndStationID INT) 
