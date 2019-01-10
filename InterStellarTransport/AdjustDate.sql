@@ -1,0 +1,14 @@
+
+CREATE FUNCTION AdjustDate(@CurrentDate DATETIME) 
+RETURNS DATE
+AS
+BEGIN
+
+
+	DECLARE @StartOfCurrentYear DATE = DATEADD(YEAR, DATEDIFF(YEAR, 0, @CurrentDate), 0)
+
+	RETURN DATEADD(DAY, DATEDIFF(DAY, @StartOfCurrentYear, @CurrentDate), CAST('2450-01-01' AS DATE))
+
+END
+GO
+
