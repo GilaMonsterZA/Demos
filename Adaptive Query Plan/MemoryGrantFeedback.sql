@@ -1,3 +1,5 @@
+-- FIX!!
+
 CREATE OR ALTER PROCEDURE ShipmentTotalsByStation (@OriginStation INT)
 AS
 
@@ -10,4 +12,4 @@ SELECT ClientID, Priority, ReferenceNumber, SUM(NumberOfContainers) as TotalCont
 GO
 
 
-EXEC ShipmentTotalsByStation 1
+EXEC ShipmentTotalsByStation 0
