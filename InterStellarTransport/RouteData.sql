@@ -1,5 +1,5 @@
 -- correct stations and run again
-SELECT * FROM dbo.Stations
+
 INSERT INTO dbo.Routes
 (
     RouteName,
@@ -19,7 +19,6 @@ VALUES
 
 GO
 
-SELECT * FROM dbo.Routes
 INSERT INTO dbo.RouteStations
 (
     RouteID,
@@ -45,3 +44,4 @@ VALUES
 	-- (1), (7), (3), (4), (5), (6)
 	(8, 1, 1, 0.00), (8, 6, 2, 0.00), (8, 2, 3, 0.00), (8, 3, 4, 0.00), (8, 4, 5, 0.00), (8, 5, 6, 0.00)
 GO
+

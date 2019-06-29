@@ -10403,3 +10403,14 @@ VALUES
 INSERT INTO #temptable
 VALUES
 ( 'Barglibeficator Holdings ' )
+
+
+INSERT INTO dbo.Clients
+(
+    LegalName,
+    HeadquarterSystemID,
+    HypernetAddress
+)
+SELECT LegalName, 1, RIGHT('00' + CAST(FLOOR(RAND(CHECKSUM(NEWID()))*512) AS VARCHAR(5)), 3) + '.' + RIGHT('00' + CAST(FLOOR(RAND(CHECKSUM(NEWID()))*512) AS VARCHAR(5)), 3) + '.' + RIGHT('00' + CAST(FLOOR(RAND(CHECKSUM(NEWID()))*512) AS VARCHAR(5)), 3) + '.' + RIGHT('00' + CAST(FLOOR(RAND(CHECKSUM(NEWID()))*512) AS VARCHAR(5)), 3) + '.' + RIGHT('00' + CAST(FLOOR(RAND(CHECKSUM(NEWID()))*512) AS VARCHAR(5)), 3) 
+FROM #temptable
+

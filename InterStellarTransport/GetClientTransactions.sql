@@ -1,6 +1,6 @@
 -- useful for showing off bad parameter sniffing
 
-ALTER PROCEDURE GetClientTransactions (@Priority TINYINT, @ClientID INT)
+CREATE OR ALTER PROCEDURE GetClientTransactions (@Priority TINYINT, @ClientID INT)
 AS
 
 SELECT c.LegalName,
