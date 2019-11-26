@@ -1,0 +1,20 @@
+version: "3.7"
+
+networks:
+  interstellar-transport-database-network:
+
+services:
+  sql-server:
+    image: local-registry:5000/interstellar-transport/sql-server
+    build:
+      context: ./sql-server
+      args:
+        - SA_PASSWORD=${SA_PASSWORD}
+        - TEST_ACCOUNT_PASSWORD=${TEST_ACCOUNT_PASSWORD}
+    environment:
+      - SA_PASSWORD=${SA_PASSWORD}
+      - TEST_ACCOUNT_PASSWORD=${TEST_ACCOUNT_PASSWORD}
+      - ACCEPT_EULA=Y
+      - MSSQL_PID=Developer
+    networks:
+      - interstellar-transport-database-network

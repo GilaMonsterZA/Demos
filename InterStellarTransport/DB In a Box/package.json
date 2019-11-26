@@ -1,0 +1,18 @@
+{
+    "name": "interstellar-transport-database",
+    "version": "1.0.0",
+    "description": "Interstellar Transport Database",
+    "license": "UNLICENSED",
+    "private": true,
+    "contributors": [
+        {
+            "name": "Matthew van der Velden",
+            "email": "matthew.vdvelden@gmail.com"
+        }
+    ],
+    "scripts": {
+        "build:qa:config": "docker-compose -f docker-compose.yml -f docker-compose.qa.yml config > docker-compose.qa-merged.yml",
+        "build:qa:images": "docker-compose -f docker-compose.qa-merged.yml build --parallel",
+        "push:qa:images": "docker-compose -f docker-compose.qa-merged.yml push"
+    }
+}
