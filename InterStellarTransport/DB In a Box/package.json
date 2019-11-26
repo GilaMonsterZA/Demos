@@ -1,13 +1,13 @@
 {
-    "name": "bootcamp-databases",
+    "name": "interstellar-transport-database",
     "version": "1.0.0",
-    "description": "Entelect Bootcamp",
+    "description": "Interstellar Transport Database",
     "license": "UNLICENSED",
     "private": true,
     "contributors": [
         {
             "name": "Matthew van der Velden",
-            "email": "matthew.vdvelden@entelect.com"
+            "email": "matthew.vdvelden@gmail.com"
         }
     ],
     "scripts": {
