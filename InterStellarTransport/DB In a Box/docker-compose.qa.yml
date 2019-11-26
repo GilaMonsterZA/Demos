@@ -1,0 +1,37 @@
+version: "3.7"
+# This file defines the overrides to run the docker containers on QA
+networks:
+  proxy:
+    external:
+      name: proxy
+services:
+  sql-server:
+    image: local-registry:5000/interstellar-transport/sql-server
+    # Note: Mounting SQL Server volumes on Docker for Mac doesn't work
+    # volumes: 
+    #   - sql-server-data:/var/opt/mssql/data
+    networks:
+      - proxy
+    deploy:
+      labels:
+        traefik.port: "1433"
+      replicas: 1
+      update_config:
+        delay: 5s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 120s
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4096M
+        reservations:
+          cpus: "0.5"
+          memory: 1024M
+
+volumes:
+  sql-server-data:
+  

@@ -1,0 +1,18 @@
+{
+    "name": "bootcamp-databases",
+    "version": "1.0.0",
+    "description": "Entelect Bootcamp",
+    "license": "UNLICENSED",
+    "private": true,
+    "contributors": [
+        {
+            "name": "Matthew van der Velden",
+            "email": "matthew.vdvelden@entelect.com"
+        }
+    ],
+    "scripts": {
+        "build:qa:config": "docker-compose -f docker-compose.yml -f docker-compose.qa.yml config > docker-compose.qa-merged.yml",
+        "build:qa:images": "docker-compose -f docker-compose.qa-merged.yml build --parallel",
+        "push:qa:images": "docker-compose -f docker-compose.qa-merged.yml push"
+    }
+}
