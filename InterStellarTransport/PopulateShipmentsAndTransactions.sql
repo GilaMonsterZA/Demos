@@ -228,6 +228,22 @@ SELECT Source.ShipmentID,
 FROM Source
 	CROSS APPLY (SELECT Number FROM dbo.Numbers WHERE Number < RAND(CHECKSUM(newID()))*200 AND Number != Source.ShipmentID) n;
 
+---
+
+
+UPDATE s
+	SET HasTemperatureControlled = sd.HasTemperatureControlled,
+		HasHazardous = sd.HasTemperatureControlled,
+		HasLivestock = sd.HasLivestock
+FROM dbo.Shipments s
+	INNER JOIN (SELECT ShipmentID, 
+						MAX(CAST(IsTemperatureControlled AS TINYINT)) AS HasTemperatureControlled,  
+						MAX(CAST(IsHazardous AS TINYINT)) AS HasHazardous,
+						MAX(CAST(IsLivestock AS TINYINT)) AS HasLivestock
+				FROM dbo.ShipmentDetails
+				GROUP BY ShipmentID
+				) sd ON sd.ShipmentID = s.ShipmentID
+
 
 -- very much a placeholder
 

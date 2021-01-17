@@ -1,3 +1,6 @@
+TRUNCATE TABLE TestingInserts;
+GO
+
 BEGIN TRANSACTION
 	INSERT INTO dbo.TestingInserts (SomeColumn, SomeOtherColumn)
 	VALUES  (1, 'Row 1')

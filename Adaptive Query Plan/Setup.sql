@@ -1,5 +1,8 @@
 -- Setup
 
+DROP TABLE IF EXISTS dbo.ShipmentsColumnStore
+DROP TABLE IF EXISTS dbo.ShipmentDetailsColumnStore
+
 SELECT * 
 INTO ShipmentsColumnStore
 FROM dbo.Shipments

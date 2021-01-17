@@ -25,9 +25,9 @@ SELECT c.LegalName,
 	   st.TotalVolume,
 	   st.TotalContainers
 	FROM dbo.Clients c 
-		INNER JOIN dbo.ShipmentTotal(1) st ON st.ClientID = c.ClientID 
+		INNER JOIN dbo.ShipmentTotal(2000) st ON st.ClientID = c.ClientID 
 		INNER JOIN dbo.Transactions t ON t.ReferenceShipmentID = st.ShipmentID
-	WHERE st.Priority = 2 AND c.ClientID = 42
+	WHERE st.Priority = 2 AND c.ClientID = 64
 	GROUP BY c.LegalName,
              st.Priority,
              st.ReferenceNumber,
@@ -35,4 +35,6 @@ SELECT c.LegalName,
              st.TotalVolume,
              st.TotalContainers;
 
+
+			 
 

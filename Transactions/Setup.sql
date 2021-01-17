@@ -8,3 +8,5 @@ CREATE TABLE TestingInserts (
 	SomeColumn INT,
 	SomeOtherColumn VARCHAR(20)
 )
+
+

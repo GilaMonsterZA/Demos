@@ -1,12 +1,12 @@
--- FIX!!
 
-CREATE OR ALTER PROCEDURE ShipmentTotalsByStation (@OriginStation INT)
+
+CREATE OR ALTER PROCEDURE ShipmentTotalsByStation (@Priority INT)
 AS
 
 SELECT ClientID, Priority, ReferenceNumber, SUM(NumberOfContainers) as TotalContainers 
-	FROM shipments s 
+	FROM dbo.ShipmentsColumnStore s 
 		INNER HASH JOIN ShipmentDetailsColumnStore sd on s.ShipmentID = sd.ShipmentDetailID
-	WHERE OriginStationID = @OriginStation
+	WHERE s.Priority <= @Priority
 	GROUP BY ClientID, Priority, ReferenceNumber
 	ORDER BY s.Priority, s.ReferenceNumber;
 GO

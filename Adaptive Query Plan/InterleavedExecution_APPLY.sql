@@ -1,4 +1,4 @@
-CREATE OR ALTER FUNCTION dbo.Numbers (@StartNumber INT, @EndNumber INT)
+CREATE OR ALTER FUNCTION dbo.Numbers2 (@StartNumber INT, @EndNumber INT)
 RETURNS @Numbers TABLE (Number Int)
 AS
 BEGIN
@@ -18,4 +18,6 @@ END
 GO
 
 
-SELECT Num.Number FROM StarSystems ss CROSS APPLY dbo.Numbers(1,9) Num;
+SELECT Num.Number FROM StarSystems ss CROSS APPLY dbo.Numbers2(1,100) Num;
+
+
