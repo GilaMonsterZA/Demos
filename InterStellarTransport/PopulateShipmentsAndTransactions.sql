@@ -3,34 +3,6 @@
 INSERT INTO dbo.CustomsCodes (CustomsCode, Description)
 VALUES ('0000', 'Placeholder')
 
--- Clients
-
-SELECT * FROM dbo.StarSystems
-
-UPDATE dbo.Clients
-	SET HeadquarterSystemID = 2
-	WHERE ClientID IN (SELECT TOP (15) PERCENT ClientID FROM dbo.Clients ORDER BY NEWID())
-
-UPDATE dbo.Clients
-	SET HeadquarterSystemID = 17
-	WHERE ClientID IN (SELECT TOP (12) PERCENT ClientID FROM dbo.Clients ORDER BY NEWID())
-
-UPDATE dbo.Clients
-	SET HeadquarterSystemID = 6
-	WHERE ClientID IN (SELECT TOP (9) PERCENT ClientID FROM dbo.Clients ORDER BY NEWID())
-
-UPDATE dbo.Clients
-	SET HeadquarterSystemID = 8
-	WHERE ClientID IN (SELECT TOP (7) PERCENT ClientID FROM dbo.Clients ORDER BY NEWID())
-
-UPDATE dbo.Clients
-	SET HeadquarterSystemID = 9
-	WHERE ClientID IN (SELECT TOP (5) PERCENT ClientID FROM dbo.Clients ORDER BY NEWID())
-
-UPDATE dbo.Clients
-	SET HeadquarterSystemID = 3
-	WHERE ClientID IN (SELECT TOP (5) PERCENT ClientID FROM dbo.Clients ORDER BY NEWID())
-
 
 -- Shipments
 
@@ -68,9 +40,9 @@ SELECT c.ClientID,
 	0,
 	0,
 	-- adjustdate. Want 4 years of data
-	dbo.AdjustDate(DATEADD(dd, RAND(CHECKSUM(NEWID()))*4*365, '2015-01-01'))
+	dbo.AdjustDate(DATEADD(dd, RAND(CHECKSUM(NEWID()))*4*365, '2020-01-01'))
 FROM dbo.Clients c 
-	CROSS APPLY (SELECT Number FROM dbo.Numbers WHERE Number < RAND(CHECKSUM(newID()))*12 AND Number != c.ClientID) n
+	CROSS APPLY (SELECT Number FROM dbo.Numbers WHERE Number < RAND(CHECKSUM(newID()))*25 AND Number != c.ClientID) n
 	CROSS APPLY (SELECT TOP (1) StationID FROM dbo.Stations WHERE ClientID != StarSystemID ORDER BY NEWID()) Origin
 	CROSS APPLY (SELECT TOP (1) StationID FROM dbo.Stations WHERE ClientID != StarSystemID ORDER BY NEWID()) Dest;
 
@@ -95,9 +67,9 @@ SELECT c.ClientID,
 	0,
 	0,
 	-- adjustdate. Want 4 years of data
-	dbo.AdjustDate(DATEADD(dd, RAND(CHECKSUM(NEWID()))*4*365, '2015-01-01'))
+	dbo.AdjustDate(DATEADD(dd, RAND(CHECKSUM(NEWID()))*4*365, '2020-01-01'))
 FROM dbo.Clients c 
-	CROSS APPLY (SELECT Number FROM dbo.Numbers WHERE Number < RAND(CHECKSUM(newID()))*25 AND Number != c.ClientID) n
+	CROSS APPLY (SELECT Number FROM dbo.Numbers WHERE Number < RAND(CHECKSUM(newID()))*50 AND Number != c.ClientID) n
 	CROSS APPLY (SELECT TOP (1) StationID FROM dbo.Stations WHERE ClientID != StarSystemID ORDER BY NEWID()) Origin
 	CROSS APPLY (SELECT TOP (1) StationID FROM dbo.Stations WHERE ClientID != StarSystemID ORDER BY NEWID()) Dest
 WHERE c.ClientID IN (SELECT TOP (15) PERCENT ClientID FROM dbo.Clients ORDER BY NEWID());
@@ -123,9 +95,9 @@ SELECT c.ClientID,
 	0,
 	0,
 	-- adjustdate. Want 4 years of data
-	dbo.AdjustDate(DATEADD(dd, RAND(CHECKSUM(NEWID()))*4*365, '2015-01-01'))
+	dbo.AdjustDate(DATEADD(dd, RAND(CHECKSUM(NEWID()))*4*365, '2020-01-01'))
 FROM dbo.Clients c 
-	CROSS APPLY (SELECT Number FROM dbo.Numbers WHERE Number < RAND(CHECKSUM(newID()))*50 AND Number != c.ClientID) n
+	CROSS APPLY (SELECT Number FROM dbo.Numbers WHERE Number < RAND(CHECKSUM(newID()))*75 AND Number != c.ClientID) n
 	CROSS APPLY (SELECT TOP (1) StationID FROM dbo.Stations WHERE ClientID != StarSystemID ORDER BY NEWID()) Origin
 	CROSS APPLY (SELECT TOP (1) StationID FROM dbo.Stations WHERE ClientID != StarSystemID ORDER BY NEWID()) Dest
 WHERE c.ClientID IN (SELECT TOP (5) PERCENT ClientID FROM dbo.Clients ORDER BY NEWID());
@@ -151,8 +123,17 @@ UPDATE Shipments
 
 UPDATE Shipments
 	SET DispatchDate = DATEADD(dd, RAND(CHECKSUM(NEWID()))*30, CreationDate)
-WHERE ShipmentID IN (SELECT TOP (15) PERCENT ShipmentID FROM dbo.Shipments ORDER BY NEWID())
+	WHERE ShipmentID IN (SELECT TOP (15) PERCENT ShipmentID FROM dbo.Shipments ORDER BY NEWID())
 GO
+
+-- and the delivery date
+
+UPDATE dbo.Shipments SET DeliveryDate = DATEADD(DAY, RAND(CHECKSUM(NEWID()))*60, DispatchDate)
+
+DECLARE @MaxDispatchDate DATETIME = (SELECT MAX(DispatchDate) FROM Shipments)
+
+UPDATE dbo.Shipments SET DeliveryDate = NULL
+WHERE DeliveryDate >= @MaxDispatchDate
 
 -- update some of the priorities
 
@@ -191,14 +172,14 @@ INSERT INTO dbo.ShipmentDetails
 )
 SELECT Source.ShipmentID, 
 	1, 
-	RAND(CHECKSUM(NEWID()))*10000, 
-	RAND(CHECKSUM(NEWID()))*10000, 
+	RAND(CHECKSUM(NEWID()))*9000, 
+	RAND(CHECKSUM(NEWID()))*9000, 
 	RAND(CHECKSUM(NEWID()))*100,
 	CASE WHEN RAND(CHECKSUM(NEWID())) < 0.1 THEN 1 ELSE 0 END,
 	CASE WHEN RAND(CHECKSUM(NEWID())) < 0.1 THEN 1 ELSE 0 END,
 	CASE WHEN RAND(CHECKSUM(NEWID())) < 0.1 THEN 1 ELSE 0 END
 FROM Source
-	CROSS APPLY (SELECT Number FROM dbo.Numbers WHERE Number < RAND(CHECKSUM(newID()))*50 AND Number != Source.ShipmentID) n;
+	CROSS APPLY (SELECT Number FROM dbo.Numbers WHERE Number < RAND(CHECKSUM(newID()))*75 AND Number != Source.ShipmentID) n;
 
 -- and a small percentage are for more.
 
@@ -219,14 +200,14 @@ INSERT INTO dbo.ShipmentDetails
 )
 SELECT Source.ShipmentID, 
 	1, 
-	RAND(CHECKSUM(NEWID()))*10000, 
-	RAND(CHECKSUM(NEWID()))*10000, 
+	RAND(CHECKSUM(NEWID()))*9000, 
+	RAND(CHECKSUM(NEWID()))*9000, 
 	RAND(CHECKSUM(NEWID()))*100,
 	CASE WHEN RAND(CHECKSUM(NEWID())) < 0.1 THEN 1 ELSE 0 END,
 	CASE WHEN RAND(CHECKSUM(NEWID())) < 0.1 THEN 1 ELSE 0 END,
 	CASE WHEN RAND(CHECKSUM(NEWID())) < 0.1 THEN 1 ELSE 0 END
 FROM Source
-	CROSS APPLY (SELECT Number FROM dbo.Numbers WHERE Number < RAND(CHECKSUM(newID()))*200 AND Number != Source.ShipmentID) n;
+	CROSS APPLY (SELECT Number FROM dbo.Numbers WHERE Number < RAND(CHECKSUM(newID()))*250 AND Number != Source.ShipmentID) n;
 
 ---
 
@@ -245,7 +226,7 @@ FROM dbo.Shipments s
 				) sd ON sd.ShipmentID = s.ShipmentID
 
 
--- very much a placeholder
+-- very much a placeholder, transactions
 
 INSERT INTO dbo.Transactions (ReferenceShipmentID, ClientID, TransactionDate, TransactionType, Amount, InvoiceNumber)
 SELECT ShipmentID,

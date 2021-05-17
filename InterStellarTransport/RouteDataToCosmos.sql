@@ -1,4 +1,4 @@
-SELECT 'g.AddV(''Station'').Property(''ID'', ''' + CAST(StationID AS VARCHAR(4)) + ''').Property(''Name'',''' + OfficialName + ''')'
+SELECT 'g.AddV(''Station'').Property(''CompanyID'',1).Property(''ID'', ''' + CAST(StationID AS VARCHAR(4)) + ''').Property(''Name'',''' + OfficialName + ''')'
 	FROM dbo.Stations
 
 SELECT 'g.V().has(''ID'', ''' + CAST(starting.StationID AS VARCHAR(4)) + ''').addE(''RouteLeg'').to(g.V().has(''ID'', ''' + CAST(ending.StationID AS VARCHAR(4)) + ''')).Property(''Distance'', ' + CAST(starting.DistanceToNextStation AS VARCHAR(10)) + ')',

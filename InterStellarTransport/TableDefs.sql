@@ -90,8 +90,9 @@ CREATE TABLE Shipments (
 	HasTemperatureControlled BIT NOT NULL DEFAULT 0,
 	HasHazardous BIT NOT NULL DEFAULT 0,
 	HasLivestock BIT NOT NULL DEFAULT 0,
-	CreationDate DATE DEFAULT (DATEADD(YEAR, 400, GETDATE())),
-	DispatchDate DATE DEFAULT (DATEADD(YEAR, 400, GETDATE()))
+	CreationDate DATE DEFAULT dbo.AdjustDate(GETDATE()),
+	DispatchDate DATE DEFAULT dbo.AdjustDate(GETDATE()),
+	DeliveryDate DATE
 );
 
 CREATE TABLE ShipmentDetails (
@@ -110,7 +111,7 @@ CREATE TABLE Transactions (
 	TransactionID INT IDENTITY PRIMARY KEY,
 	ReferenceShipmentID INT NOT NULL FOREIGN KEY REFERENCES dbo.Shipments (ShipmentID),
 	ClientID INT NOT NULL FOREIGN KEY REFERENCES Clients (ClientID), 
-	TransactionDate DATETIME NOT NULL DEFAULT (DATEADD(YEAR, 400, GETDATE())),
+	TransactionDate DATETIME NOT NULL dbo.AdjustDate(GETDATE()),
 	TransactionType CHAR(1) NOT NULL,
 	Amount NUMERIC(8,2) NOT NULL,
 	InvoiceNumber CHAR(15) NOT NULL
