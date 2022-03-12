@@ -1,0 +1,95 @@
+StormEvents 
+| count
+
+
+
+
+
+
+StormEvents
+| where StartTime > datetime(2007-02-01) and StartTime < datetime(2007-03-01)
+| where EventType == 'Flood' and State == 'CALIFORNIA'
+| project StartTime, EndTime , State , EventType , EpisodeNarrative
+
+
+
+
+
+
+StormEvents
+| top 5 by StartTime desc
+| project  StartTime, EndTime, EventType, State, EventNarrative
+
+
+
+
+
+StormEvents
+| limit 5
+| extend Duration = EndTime - StartTime 
+| project StartTime, EndTime, Duration, EventType, State
+
+
+StormEvents 
+| summarize StormCount = count(), TypeOfStorms = dcount(EventType) by State
+| top 5 by StormCount desc
+
+
+
+StormEvents
+| where StartTime > datetime(2007-02-14) and StartTime < datetime(2007-02-21)
+| summarize event_count = count() by bin(StartTime, 1d)
+
+
+
+
+StormEvents 
+| summarize event_count=count(), mid = avg(BeginLat) by State 
+| sort by mid
+| where event_count > 1800
+| project State, event_count
+| render columnchart
+
+
+
+StormEvents
+| summarize event_count=count() by bin(StartTime, 1d)
+| render timechart
+
+
+
+
+
+
+StormEvents
+| extend hour = floor(StartTime % 1d , 1h)
+| summarize event_count=count() by hour
+| sort by hour asc
+| render timechart;
+
+
+
+StormEvents
+| extend  duration = EndTime - StartTime
+| where duration > 0s
+| where duration < 3h
+| summarize event_count = count()
+    by bin(duration, 5m), State
+| sort by duration asc
+| summarize percentiles(duration, 5, 20, 50, 80, 95) by State;
+
+
+
+
+let LightningStorms = 
+    StormEvents
+    | where EventType == "Lightning";
+let AvalancheStorms = 
+    StormEvents
+    | where EventType == "Avalanche";
+LightningStorms 
+| join (AvalancheStorms) on State
+| distinct State;
+
+
+
