@@ -22,8 +22,9 @@ CREATE TABLE Stations (
 	StarSystemID INT FOREIGN KEY REFERENCES dbo.StarSystems (StarSystemID) NOT NULL,
 	OfficialName VARCHAR(50) NOT NULL,
 	CommonName VARCHAR(50),
-	Planet TINYINT NOT NULL,
-	Location VARCHAR(15) NOT NULL
+	Planet TINYINT NULL,
+	Location VARCHAR(15) NOT NULL,
+	CHECK (Planet > 0 OR Planet IS NULL)
 );
 
 CREATE TABLE Routes (
@@ -31,7 +32,8 @@ CREATE TABLE Routes (
 	RouteName VARCHAR(250),
 	StartStationID INT NOT NULL FOREIGN KEY REFERENCES dbo.Stations (StationID),
 	EndStationID INT NOT NULL FOREIGN KEY REFERENCES dbo.Stations (StationID),
-	RouteLength  NUMERIC(7,2) NOT NULL
+	RouteLength  NUMERIC(7,2) NOT NULL,
+	CHECK (RouteLength>=0)
 );
 
 CREATE TABLE RouteStations (
@@ -111,7 +113,7 @@ CREATE TABLE Transactions (
 	TransactionID INT IDENTITY PRIMARY KEY,
 	ReferenceShipmentID INT NOT NULL FOREIGN KEY REFERENCES dbo.Shipments (ShipmentID),
 	ClientID INT NOT NULL FOREIGN KEY REFERENCES Clients (ClientID), 
-	TransactionDate DATETIME NOT NULL dbo.AdjustDate(GETDATE()),
+	TransactionDate DATETIME NOT NULL DEFAULT (dbo.AdjustDate(GETDATE())),
 	TransactionType CHAR(1) NOT NULL,
 	Amount NUMERIC(8,2) NOT NULL,
 	InvoiceNumber CHAR(15) NOT NULL

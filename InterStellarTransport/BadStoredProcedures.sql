@@ -97,8 +97,7 @@ CREATE TABLE #Results (
 	HazardousContainersPreviousWeek INT,
 	HazardousContainersPreviousMonth INT,
 	TemperatureControlledContainersPreviousWeek INT,
-	TemperatureControlledContainersPreviousMonth INT,
-	NewShipmentsPreviousWeek INT
+	TemperatureControlledContainersPreviousMonth INT
 );
 
 SELECT ShipmentID, HasTemperatureControlled, HasHazardous, HasLivestock
@@ -139,10 +138,144 @@ SELECT s.ShipmentID, sd.ShipmentDetailID, s.CreationDate, sd.Mass
 	WHERE s.CreationDate >= DATEADD(WEEK,-1,@EffectiveDate)
 		AND sd.IsLivestock = 1;
 
+SELECT s.ShipmentID, sd.ShipmentDetailID, s.CreationDate, sd.Mass 
+	INTO #LivestockLastMonth
+	FROM dbo.Shipments s 
+		INNER JOIN dbo.ShipmentDetails sd ON sd.ShipmentID = s.ShipmentID
+	WHERE s.CreationDate >= DATEADD(MONTH,-1,@EffectiveDate)
+		AND sd.IsLivestock = 1;
+
+SELECT s.ShipmentID, sd.ShipmentDetailID, s.CreationDate, sd.Mass 
+	INTO #TemperatureControlledLastWeek
+	FROM dbo.Shipments s 
+		INNER JOIN dbo.ShipmentDetails sd ON sd.ShipmentID = s.ShipmentID
+	WHERE s.CreationDate >= DATEADD(WEEK,-1,@EffectiveDate)
+		AND sd.IsTemperatureControlled = 1;
+
+SELECT s.ShipmentID, sd.ShipmentDetailID, s.CreationDate, sd.Mass 
+	INTO #TemperatureControlledLastMonth
+	FROM dbo.Shipments s 
+		INNER JOIN dbo.ShipmentDetails sd ON sd.ShipmentID = s.ShipmentID
+	WHERE s.CreationDate >= DATEADD(MONTH,-1,@EffectiveDate)
+		AND sd.IsTemperatureControlled = 1;
+
+SELECT s.ShipmentID, sd.ShipmentDetailID, s.CreationDate, sd.Mass 
+	INTO #HazardousLastWeek
+	FROM dbo.Shipments s 
+		INNER JOIN dbo.ShipmentDetails sd ON sd.ShipmentID = s.ShipmentID
+	WHERE s.CreationDate >= DATEADD(WEEK,-1,@EffectiveDate)
+		AND sd.IsHazardous = 1;
+
+SELECT s.ShipmentID, sd.ShipmentDetailID, s.CreationDate, sd.Mass 
+	INTO #HazardousLastMonth
+	FROM dbo.Shipments s 
+		INNER JOIN dbo.ShipmentDetails sd ON sd.ShipmentID = s.ShipmentID
+	WHERE s.CreationDate >= DATEADD(MONTH,-1,@EffectiveDate)
+		AND sd.IsHazardous = 1;
+
+INSERT INTO #Results (OutstandingShipments, OutstandingShipmentsWithLivestock, OutstandingShipmentsWithHazardous,
+                      OutstandingShipmentsWithTemperatureControlled, TransactionsPreviousWeek,
+                      TransactionValuePreviousWeek, TransactionsPreviousMonth, TransactionValuePreviousMonth,
+                      LivestockContainersPreviousWeek, LivestockContainersPreviousMonth,
+                      HazardousContainersPreviousWeek, HazardousContainersPreviousMonth,
+                      TemperatureControlledContainersPreviousWeek, TemperatureControlledContainersPreviousMonth)
+SELECT 
+	(SELECT COUNT(*) FROM #OutStandingShipments),
+	(SELECT COUNT(*) FROM #OutstandingShipmentWithLivestock),
+	(SELECT COUNT(*) FROM #OutstandingShipmentWithHazardous),
+	(SELECT COUNT(*) FROM #OutstandingShipmentWithTempControlled),
+	(SELECT COUNT(*) FROM #TransactionsPreviousWeek),
+	(SELECT SUM(Amount) FROM #TransactionsPreviousWeek),
+	(SELECT COUNT(*) FROM #TransactionsPreviousMonth),
+	(SELECT SUM(Amount) FROM #TransactionsPreviousMonth),
+	(SELECT COUNT(*) FROM #LivestockLastWeek),
+	(SELECT COUNT(*) FROM #LivestockLastMonth),
+	(SELECT COUNT(*) FROM #HazardousLastWeek),
+	(SELECT COUNT(*) FROM #HazardousLastMonth),
+	(SELECT COUNT(*) FROM #TemperatureControlledLastWeek),
+	(SELECT COUNT(*) FROM #TemperatureControlledLastMonth)
+
+SELECT OutstandingShipments,
+       OutstandingShipmentsWithLivestock,
+       OutstandingShipmentsWithHazardous,
+       OutstandingShipmentsWithTemperatureControlled,
+       TransactionsPreviousWeek,
+       TransactionValuePreviousWeek,
+       TransactionsPreviousMonth,
+       TransactionValuePreviousMonth,
+       LivestockContainersPreviousWeek,
+       LivestockContainersPreviousMonth,
+       HazardousContainersPreviousWeek,
+       HazardousContainersPreviousMonth,
+       TemperatureControlledContainersPreviousWeek,
+       TemperatureControlledContainersPreviousMonth 
+FROM #Results
+
+GO
+
+CREATE OR ALTER FUNCTION dbo.ClientName (@ClientID INT)
+RETURNS VARCHAR(50)
+AS
+BEGIN
+    
+	DECLARE @ClientDetails VARCHAR(50)
+	SELECT @ClientDetails = LegalName + ' (' + HypernetAddress + ')' FROM dbo.Clients WHERE ClientID = @ClientID
+
+	RETURN @ClientDetails
+END
+
+
+GO
+
+
+CREATE OR ALTER FUNCTION dbo.StationName (@StationID INT)
+RETURNS VARCHAR(50)
+AS
+BEGIN
+    
+	DECLARE @StationDetails VARCHAR(50)
+	SELECT @StationDetails = OfficialName + ' (' + Location + ' Planet ' + CAST(Planet AS VARCHAR(3)) + ')' FROM dbo.Stations WHERE StationID = @StationID
+
+	RETURN @StationDetails
+END
+GO
+
+CREATE OR ALTER FUNCTION dbo.ShipmentVolume (@ShipmentID INT)
+RETURNS NUMERIC(20,4)
+AS
+BEGIN
+    DECLARE @ShipmentVolume NUMERIC(20,4);
+    SELECT @ShipmentVolume = SUM(sd.Volume) FROM dbo.ShipmentDetails sd WHERE sd.ShipmentID = @ShipmentID;
+ 
+    RETURN @ShipmentVolume;
+ 
+END
+
 GO
 
 CREATE OR ALTER PROCEDURE CustomerInvoice (@ClientID INT, @StartDate DATE)
-AS;
+AS
+
+SELECT dbo.ClientName(s.ClientID) AS ClientName,
+       s.ReferenceNumber,
+       s.Priority,
+	   dbo.StationName(s.OriginStationID) AS OriginStation,
+	   dbo.StationName(s.DestinationStationID) AS DestinationStation,
+       s.HasTemperatureControlled,
+       s.HasHazardous,
+       s.HasLivestock,
+       s.CreationDate,
+       s.DispatchDate,
+       s.DeliveryDate,
+       dbo.ShipmentMass(s.ShipmentID) AS ShipmentMass,
+       dbo.ShipmentVolume(s.ShipmentID) AS ShipmentVolume,
+       t.TransactionDate,
+       t.TransactionType,
+       t.Amount,
+       t.InvoiceNumber 
+	FROM dbo.Shipments s 
+		INNER JOIN dbo.Transactions t ON t.ReferenceShipmentID = s.ShipmentID
+	WHERE t.ClientID = @ClientID AND t.TransactionDate > @StartDate;
 
 
 
