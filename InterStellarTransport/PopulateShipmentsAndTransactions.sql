@@ -3,7 +3,6 @@
 INSERT INTO dbo.CustomsCodes (CustomsCode, Description)
 VALUES ('0000', 'Placeholder')
 
-
 -- Shipments
 
 SELECT ClientID,
@@ -42,12 +41,11 @@ SELECT c.ClientID,
 	-- adjustdate. Want 4 years of data
 	dbo.AdjustDate(DATEADD(dd, RAND(CHECKSUM(NEWID()))*4*365, '2020-01-01'))
 FROM dbo.Clients c 
-	CROSS APPLY (SELECT Number FROM dbo.Numbers WHERE Number < RAND(CHECKSUM(newID()))*25 AND Number != c.ClientID) n
+	CROSS APPLY (SELECT Number FROM dbo.Numbers WHERE Number < RAND(CHECKSUM(NEWID()))*25 AND Number != c.ClientID) n
 	CROSS APPLY (SELECT TOP (1) StationID FROM dbo.Stations WHERE ClientID != StarSystemID ORDER BY NEWID()) Origin
 	CROSS APPLY (SELECT TOP (1) StationID FROM dbo.Stations WHERE ClientID != StarSystemID ORDER BY NEWID()) Dest;
 
-INSERT INTO #Shipments
-(
+INSERT INTO #Shipments (
     ClientID,
     ReferenceNumber,
     Priority,
@@ -128,12 +126,15 @@ GO
 
 -- and the delivery date
 
-UPDATE dbo.Shipments SET DeliveryDate = DATEADD(DAY, RAND(CHECKSUM(NEWID()))*60, DispatchDate)
+UPDATE dbo.Shipments SET DeliveryDate = DATEADD(DAY, RAND(CHECKSUM(NEWID()))*60, DispatchDate) WHERE DispatchDate IS NOT NULL
 
 DECLARE @MaxDispatchDate DATETIME = (SELECT MAX(DispatchDate) FROM Shipments)
 
 UPDATE dbo.Shipments SET DeliveryDate = NULL
 WHERE DeliveryDate >= @MaxDispatchDate
+
+UPDATE dbo.Shipments SET DispatchDate = NULL
+	WHERE ShipmentID IN (SELECT TOP (15) PERCENT ShipmentID FROM dbo.Shipments WHERE DeliveryDate IS NULL ORDER BY NEWID())
 
 -- update some of the priorities
 
@@ -144,7 +145,7 @@ WHERE ShipmentID IN (SELECT TOP (20) PERCENT ShipmentID FROM dbo.Shipments ORDER
 
 UPDATE Shipments
 	SET Priority = 3
-WHERE ShipmentID IN (SELECT TOP (40) PERCENT ShipmentID FROM dbo.Shipments ORDER BY NEWID())
+WHERE ShipmentID IN (SELECT TOP (40) PERCENT ShipmentID FROM dbo.Shipments ORDER BY NEWID());
 
 --------------------------------------------------------------------------------
 	
